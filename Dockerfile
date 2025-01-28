@@ -1,6 +1,6 @@
 FROM node:22 AS builder
 WORKDIR /usr/src/app
-COPY ./02-pokemon-static/ .
+COPY . .
 RUN yarn install
 RUN yarn run build
 
