@@ -1,0 +1,8 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: static-prod
+    ports:
+      - 4321:80
