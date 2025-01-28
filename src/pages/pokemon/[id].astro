@@ -1,0 +1,43 @@
+---
+import PokemonCard from "@/components/pokemons/PokemonCard.astro";
+import type { PokemonListResponse } from "@/interfaces/pokemon-list.response";
+import MainLayout from "@/layouts/MainLayout.astro";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (async () => {
+  const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+  const data = (await res.json()) as PokemonListResponse;
+
+  const params = data.results.map((pokemon) => ({
+    params: {
+      id: pokemon.url.split("/").at(-2),
+    },
+    props: {
+      url: pokemon.url,
+      name: pokemon.name,
+    },
+  }));
+  return params;
+}) satisfies GetStaticPaths;
+
+const { id } = Astro.params;
+const { url, name } = Astro.props;
+
+const title = `${name.charAt(0).toUpperCase()}${name.slice(1)} - Pokemon`;
+const criesSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+---
+
+<MainLayout title={title}>
+  <section class="mt-10 mx-10 flex flex-col justify-center items-center">
+    <div class="mb-5">
+      <a href="/">Volver</a>
+      <h1 class="text-5xl capitalize">{name}</h1>
+    </div>
+
+    <PokemonCard name={name} url={url} isBig />
+    <audio class="mt-5" controls>
+      <source src={criesSrc} type="audio/ogg" />
+      Your browser does not support the audio element.
+    </audio>
+  </section>
+</MainLayout>

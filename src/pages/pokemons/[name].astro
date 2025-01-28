@@ -1,0 +1,67 @@
+---
+import type { GetStaticPaths } from "astro";
+
+import PokemonCard from "@/components/pokemons/PokemonCard.astro";
+import type { PokemonListResponse } from "@/interfaces/pokemon-list.response";
+import MainLayout from "@/layouts/MainLayout.astro";
+import Title from "@/components/shared/Title.astro";
+
+export const getStaticPaths = (async () => {
+  const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+  const data = (await res.json()) as PokemonListResponse;
+
+  const params = data.results.map((pokemon) => ({
+    params: {
+      name: pokemon.name.toLowerCase(),
+    },
+    props: {
+      url: pokemon.url,
+    },
+  }));
+
+  return params;
+}) satisfies GetStaticPaths;
+
+const { name } = Astro.params;
+const { url } = Astro.props;
+
+const title = `${name.charAt(0).toUpperCase()}${name.slice(1)} - Pokemon`;
+const id = url.split("/").at(-2);
+
+const criesSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+---
+
+<MainLayout
+  title={title}
+  description={`Información sobre el pokemon ${name}`}
+  image={imageSrc}
+>
+  <section class="mt-10 mx-10 flex flex-col justify-center items-center">
+    <div class="mb-5">
+      <a data-go-back>Volver</a>
+      <Title>{name}</Title>
+    </div>
+
+    <PokemonCard name={name} url={url} isBig />
+    <audio class="mt-5" controls>
+      <source src={criesSrc} type="audio/ogg" />
+      Your browser does not support the audio element.
+    </audio>
+  </section>
+</MainLayout>
+
+<style>
+  a {
+    @apply hover:underline text-blue-500;
+  }
+</style>
+
+<script>
+  const anchor = document.querySelector("a[data-go-back]")!;
+
+  anchor.addEventListener("click", (e) => {
+    e.preventDefault();
+    history.back();
+  });
+</script>

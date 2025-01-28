@@ -1,0 +1,46 @@
+---
+import NavBar from "@/components/shared/NavBar.astro";
+import { SITE_INFO } from "@/consts/site-info";
+
+interface Props {
+  title?: string;
+  image?: string;
+  description?: string;
+}
+
+const {
+  title = SITE_INFO.title,
+  description = SITE_INFO.description,
+  image,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+
+    <meta name="author" content="Gabriel Collado Yáñez" />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+
+    <title>{title}</title>
+    <!-- <ClientRouter /> -->
+  </head>
+  <body class="bg-slate-800 text-slate-100">
+    <NavBar />
+    <main class="my-10 m-auto max-w-3xl">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  @view-transition {
+    navigation: auto;
+  }
+</style>

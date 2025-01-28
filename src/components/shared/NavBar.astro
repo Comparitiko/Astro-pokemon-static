@@ -1,0 +1,47 @@
+---
+import NavBarLink from "./NavBarLink.astro";
+
+const links = [
+  { href: "/", text: "Listado" },
+  { href: "/pokemons/1", text: "Paginado" },
+  { href: "/favorites", text: "Favoritos" },
+];
+---
+
+<nav class="shadow bg-slate-800">
+  <div
+    class="container flex items-center justify-center p-6 mx-auto text-gray-600 capitalize dark:text-gray-300"
+  >
+    <!-- {
+      links.map((link) => (
+        <NavBarLink
+          href={link.href}
+          isActive={Astro.url.pathname === link.href}
+        >
+          {link.text}
+        </NavBarLink>
+      ))
+    } -->
+
+    {
+      links.map((link) => (
+        <div>
+          <NavBarLink
+            href={link.href}
+            isActive={Astro.url.pathname === link.href}
+          >
+            {link.text}
+          </NavBarLink>
+          {Astro.url.pathname === link.href ? (
+            <div
+              transition:name="menu-line"
+              class="border-b-2 border-blue-500 mx-4"
+            />
+          ) : (
+            <div class="border-b-2 border-transparent mx-4" />
+          )}
+        </div>
+      ))
+    }
+  </div>
+</nav>
