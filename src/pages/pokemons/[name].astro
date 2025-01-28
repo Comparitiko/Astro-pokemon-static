@@ -5,6 +5,7 @@ import PokemonCard from "@/components/pokemons/PokemonCard.astro";
 import type { PokemonListResponse } from "@/interfaces/pokemon-list.response";
 import MainLayout from "@/layouts/MainLayout.astro";
 import Title from "@/components/shared/Title.astro";
+import { Icon } from "astro-icon/components";
 
 export const getStaticPaths = (async () => {
   const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
@@ -38,9 +39,21 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
   image={imageSrc}
 >
   <section class="mt-10 mx-10 flex flex-col justify-center items-center">
-    <div class="mb-5">
-      <a data-go-back>Volver</a>
-      <Title>{name}</Title>
+    <div class="flex">
+      <div class="mb-5">
+        <button
+          onclick="history.back()"
+          class="text-blue-500 hover:underline hover:text-blue-300"
+        >
+          Volver
+        </button>
+        <Title>{name}</Title>
+      </div>
+
+      <button id="btn-favorite" class="ml-4" data-name={name} data-id={id}>
+        <Icon name="heart-outline" size={50} data-outline />
+        <Icon class="hidden" name="filled-heart" size={50} data-full />
+      </button>
     </div>
 
     <PokemonCard name={name} url={url} isBig />
@@ -55,13 +68,70 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
   a {
     @apply hover:underline text-blue-500;
   }
+
+  #btn-favorite {
+    @apply hover:animate-pulse;
+  }
 </style>
 
 <script>
-  const anchor = document.querySelector("a[data-go-back]")!;
+  interface FavoritePokemon {
+    id: number;
+    name: string;
+  }
 
-  anchor.addEventListener("click", (e) => {
-    e.preventDefault();
-    history.back();
-  });
+  const handlePageLoad = () => {
+    let favoritesPokemons: FavoritePokemon[] = JSON.parse(
+      localStorage.getItem("favorites") ?? "[]"
+    );
+
+    const btnFavorite =
+      document.querySelector<HTMLButtonElement>("#btn-favorite");
+
+    if (!btnFavorite) return;
+
+    const { id = 0, name = "" } = btnFavorite.dataset;
+
+    const heartOutline = document.querySelector<HTMLElement>("[data-outline]")!;
+    const heartFull = document.querySelector<HTMLElement>("[data-full]")!;
+
+    // Check if the pokemon is in the favorites
+    const setHeartIcon = () => {
+      const isFavorite = favoritesPokemons.some((fav) => fav.name === name);
+
+      if (isFavorite) {
+        heartOutline.classList.add("hidden");
+        heartFull.classList.remove("hidden");
+      }
+    };
+
+    setHeartIcon();
+
+    const toggleFav = () => {
+      const isFavorite = favoritesPokemons.some((fav) => fav.name === name);
+
+      if (isFavorite) {
+        // Remove the favorite pokemon
+        favoritesPokemons = favoritesPokemons.filter(
+          (fav) => fav.name !== name
+        );
+      } else {
+        favoritesPokemons.push({
+          id: +id,
+          name,
+        });
+      }
+
+      localStorage.setItem("favorites", JSON.stringify(favoritesPokemons));
+    };
+
+    btnFavorite.addEventListener("click", () => {
+      heartOutline.classList.toggle("hidden");
+      heartFull.classList.toggle("hidden");
+
+      toggleFav();
+    });
+  };
+
+  document.addEventListener("astro:page-load", handlePageLoad);
 </script>
