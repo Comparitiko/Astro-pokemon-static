@@ -75,10 +75,7 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
 </style>
 
 <script>
-  interface FavoritePokemon {
-    id: number;
-    name: string;
-  }
+  import type { FavoritePokemon } from "@/interfaces/favorite-pokemon";
 
   const handlePageLoad = () => {
     let favoritesPokemons: FavoritePokemon[] = JSON.parse(
@@ -97,6 +94,7 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
 
     // Check if the pokemon is in the favorites
     const setHeartIcon = () => {
+			console.log(favoritesPokemons);
       const isFavorite = favoritesPokemons.some((fav) => fav.name === name);
 
       if (isFavorite) {

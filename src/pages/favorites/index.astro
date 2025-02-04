@@ -1,9 +1,10 @@
 ---
+import { FavoritePokemons } from "@/components/pokemons/FavoritePokemons";
 import Title from "@/components/shared/Title.astro";
 import MainLayout from "@/layouts/MainLayout.astro";
 ---
 
-<MainLayout title="favoritos">
+<MainLayout title="Pokemon Favoritos">
   <Title>Favoritos</Title>
   <!-- <video controls="" autoplay="" transition:persist="video">
     <source
@@ -12,4 +13,5 @@ import MainLayout from "@/layouts/MainLayout.astro";
     />
   </video>
   <Counter transition:persist="counter" transition:persist-props client:load /> -->
+  <FavoritePokemons client:only="solid-js" />
 </MainLayout>
